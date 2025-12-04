@@ -1,38 +1,234 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 150px;
   align-items: center;
-  justify-content: center;
+  padding: 40px 0;
   font-size: calc(10px + 2vmin);
   color: white;
+  position: relative;
 }
 
-.App-link {
-  color: #61dafb;
+.top-left {
+  position: absolute;
+  padding: 4px;
+  text-align: left;
+  top: 10px;
+  left: 20px;
+  color: #c4f5f5;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Refund row */
+.refund-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.refund-row p {
+  margin: 0;
+}
+
+.claim-refund-btn {
+  padding: 6px 12px;
+  background: lightcyan;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Admin controls (register seller + withdraw fee) */
+.admin-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.register-seller-btn,
+.withdraw-fee-btn,
+.connect-wallet-btn,
+.view-items-btn,
+.bid-btn,
+.cancel-bid-btn,
+.list-item-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.register-seller-btn,
+.withdraw-fee-btn {
+  background: #c4f5f5;
+}
+
+.connect-wallet-btn {
+  background: #ffffff;
+}
+
+.view-items-btn {
+  background: lightblue;
+}
+
+.bid-btn {
+  background: rgb(180, 255, 230);
+}
+
+.cancel-bid-btn {
+  background: goldenrod;
+}
+
+.claim-refund-btn {
+  background: lightcyan;
+}
+.list-item-btn{
+  background-color: goldenrod;
+}
+/* Inputs */
+.input-small,
+.input-medium {
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  border: 2px solid black;
+}
+
+.input-small {
+  width: 120px;
+}
+
+.input-medium {
+  width: 200px;
+}
+
+/* Items Panel */
+.see-items {
+  width: 80%;
+  max-width: 1200px;
+  background-color: rgb(158, 200, 241);
+  padding: 30px;
+  border-radius: 20px;
+  margin-top: 300px;
+  color: white;
+  text-align: center;
+}
+
+.items {
+  margin-top: 20px;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 20px !important;
+  width: 100%;
+}
+
+.align-items {
+  background: #683a3a;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  color: white;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* LIST ITEM BOX - Modern clean design */
+.list-item {
+  background: #fdacac;
+  width: 90%;
+  max-width: 450px;
+  padding: 25px;
+  border-radius: 16px;
+  margin: 16px;
+  padding: 12px;
+  margin-top: 20px;
+  color: #222;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.list-item input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 900px) {
+  .items {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
-  to {
-    transform: rotate(360deg);
+
+  .see-items {
+    margin-top: 150px;
+    width: 90%;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .App-header {
+    padding-top: 100px;
+  }
+
+  .top-left {
+    font-size: 12px;
+    left: 10px;
+  }
+
+  .refund-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .claim-refund-btn {
+    width: 100%;
+  }
+
+  .admin-controls {
+    top: 10px;
+    right: 10px;
+    align-items: flex-end;
+  }
+
+  .register-seller-btn,
+  .withdraw-fee-btn {
+    padding: 12px 16px;
+    border-radius: 18px;
+  }
+
+  .items {
+    grid-template-columns: repeat(1, 1fr) !important;
+    gap: 15px !important;
+  }
+
+  .see-items {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .list-item {
+    width: 95%;
+    padding: 18px;
+  }
+
+  .input-small,
+  .input-medium {
+    width: 100%;
   }
 }
