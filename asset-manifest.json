@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/new-bidding-dapp/static/css/main.727ee400.css",
-    "main.js": "/new-bidding-dapp/static/js/main.be5e75d6.js",
-    "static/js/453.d7446e4a.chunk.js": "/new-bidding-dapp/static/js/453.d7446e4a.chunk.js",
-    "index.html": "/new-bidding-dapp/index.html",
-    "main.727ee400.css.map": "/new-bidding-dapp/static/css/main.727ee400.css.map",
-    "main.be5e75d6.js.map": "/new-bidding-dapp/static/js/main.be5e75d6.js.map",
-    "453.d7446e4a.chunk.js.map": "/new-bidding-dapp/static/js/453.d7446e4a.chunk.js.map"
+    "main.css": "/new-Bidding-Dapp/static/css/main.727ee400.css",
+    "main.js": "/new-Bidding-Dapp/static/js/main.d8e1c3f5.js",
+    "static/js/453.d7446e4a.chunk.js": "/new-Bidding-Dapp/static/js/453.d7446e4a.chunk.js",
+    "index.html": "/new-Bidding-Dapp/index.html",
+    "main.727ee400.css.map": "/new-Bidding-Dapp/static/css/main.727ee400.css.map",
+    "main.d8e1c3f5.js.map": "/new-Bidding-Dapp/static/js/main.d8e1c3f5.js.map",
+    "453.d7446e4a.chunk.js.map": "/new-Bidding-Dapp/static/js/453.d7446e4a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.727ee400.css",
-    "static/js/main.be5e75d6.js"
+    "static/js/main.d8e1c3f5.js"
   ]
 }
