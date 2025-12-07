@@ -1,0 +1,40 @@
+.auto-popup {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  z-index: 9999;
+  animation: fadeInOut 2s ease forwards;
+}
+
+/* SUCCESS GREEN */
+.auto-popup.success {
+  background: #28b463;
+}
+
+/* ERROR RED */
+.auto-popup.error {
+  background: #e84141;
+}
+
+/* LOADING BLUE (no fadeout) */
+.auto-popup.loading {
+  background: #3498db;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+/* fade in + fade out animation */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(15px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(15px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -14,7 +14,8 @@ let abi = [
   "function buyerRefund(address) public view returns(uint)",
   "function claimRefund() external",
   "function cancelBid(uint index) public",
-  "function feeWithdraw(uint _amount) public"
+  "function feeWithdraw(uint _amount) public",
+  "function claimSellAmount(uint index) public"
 ];
 
 function App() {
@@ -102,9 +103,9 @@ function App() {
         endTime,
         { value: parseEther(fee.toString()).toString() }
       );
-
       await tx.wait();
       alert("Item listed!");
+      checkDetails();
     } catch (err) {
       alert(err.reason || err.message);
     }
@@ -127,7 +128,6 @@ function App() {
         name: item[6],
         isActive: item[7]
       }));
-
       setFormattedData(formatted);
     } catch (err) {
       alert(err.reason || err.message);
@@ -143,7 +143,9 @@ function App() {
       });
 
       await tx.wait();
+      alert("Transaction Successful");
       seeItems(searchAddress);
+      checkDetails();
     } catch (err) {
       alert(err.reason || err.message);
     }
@@ -175,12 +177,22 @@ function App() {
 
   async function feeWithdraw() {
     if (!contract) return;
-
     try {
       let tx = await contract.feeWithdraw(parseEther(feeAmount.toString()));
       await tx.wait();
       checkDetails();
       alert("Fee withdrawn");
+    } catch (err) {
+      alert(err.reason || err.message);
+    }
+  }
+  async function claimSellAmount(index) {
+    if (!contract) return;
+    try {
+      let tx = await contract.claimSellAmount(index);
+      await tx.wait();
+      checkDetails();
+      alert("Bid Amount Successfully withdrawn");
     } catch (err) {
       alert(err.reason || err.message);
     }
@@ -257,41 +269,50 @@ function App() {
                 <p>Start : {item.startingTime}</p>
                 <p>End : {item.endingTime}</p>
                 <p>Active : {item.isActive ? "✅" : "❌"}</p>
-
-                <input
-                  type="number"
-                  placeholder="Enter Bid Amount"
-                  className="input-medium"
-                  onChange={(e) => setBiddingPrice(e.target.value)}
-                />
-
-                <button
-                  onClick={() => makeBidding(index, item.sellerAddress)}
-                  className="bid-btn"
-                >
-                  Make Bid
-                </button>
-
-                {getAddress(item.sellerAddress) === getAddress(userAddress) && (
+                {item.isActive?
+                  <div style={{}}>
+                    <input
+                      type="number"
+                      placeholder="Enter Bid Amount"
+                      className="input-medium"
+                      onChange={(e) => setBiddingPrice(e.target.value)}
+                    />
                   <button
-                    onClick={() => cancelBid(index)}
-                    className="cancel-bid-btn"
+                    onClick={() => makeBidding(index, item.sellerAddress)}
+                    className="bid-btn"
                   >
-                    Cancel Bid
+                    Make Bid
                   </button>
-                )}
-              </div>
+                  {getAddress(item.sellerAddress) === getAddress(userAddress) && (
+                    <button
+                      onClick={() => cancelBid(index)}
+                      className="cancel-bid-btn"
+                    >
+                      Cancel Bid
+                    </button>
+                  )}
+                </div>:
+                <div>
+                  {getAddress(item.sellerAddress) === getAddress(userAddress) && (
+                    <button
+                      onClick={()=>claimSellAmount(index)}
+                      className="cancel-bid-btn"
+                    >
+                      Claim Sell Amount
+                    </button>
+                  )}
+                  <p style={{color:'rgba(189, 245, 92, 1)'}}>Event Ended Or Cancelled - No More Bidding</p>
+                </div>}
+            </div>
             ))}
           </div>
         </div>
-
         <div className="list-item" style={{ display: contract ? "block" : "none" }}>
           {isUserSeller ? (
             <>
               <input type="text" placeholder="Item Name" className="form-input" onChange={(e) => setItemName(e.target.value)} /><br/><br/>
               <input type="number" placeholder="Listing Price" className="form-input" onChange={(e) => setListingAmount(e.target.value)} /><br/><br/>
               <input type="number" placeholder="Deadline" className="form-input" onChange={(e) => setEndTime(e.target.value)} /><br/><br/>
-
               <button onClick={listItem} className="list-item-btn">
                 List Item
               </button>
