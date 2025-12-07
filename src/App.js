@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserProvider, Contract, formatEther, getAddress, parseEther } from 'ethers';
 import './App.css';
 
-const ca = "0x44dB8c3f3895fb125930Aea660CAd1D45c02fF98";
+const ca = "0x55E229e28b745c4a4a1408b6c5a2f73E64d149F1";
 let abi = [
   "function registerAsSeller() public payable",
   "function isSeller(address) public view returns(bool)",
@@ -14,7 +14,7 @@ let abi = [
   "function buyerRefund(address) public view returns(uint)",
   "function claimRefund() external",
   "function cancelBid(uint index) public",
-  "function feeWithdraw(uint _amount) public",
+  "function feeWithdraw() public",
   "function claimSellAmount(uint index) public"
 ];
 
@@ -31,13 +31,16 @@ function App() {
   const [formattedData, setFormattedData] = useState([]);
   const [biddingPrice, setBiddingPrice] = useState(0);
   const [userRefund, setUserRefund] = useState(0);
-  const [feeAmount, setFeeAmount] = useState(0);
 
   useEffect(() => {
     if (!window.ethereum || !contract) return;
 
-    checkDetails();
-
+    (async () => {
+      try {
+      } catch (err) {
+        console.error(err);
+      }
+    })();
     const handleAccountsChanged = (accounts) => {
       setUserAddress(accounts[0] || "");
     };
@@ -48,6 +51,7 @@ function App() {
       window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
     };
   }, [contract, userAddress]);
+
 
   async function connectWallet() {
     if (!window.ethereum) return alert("Wallet Not Found");
@@ -178,7 +182,7 @@ function App() {
   async function feeWithdraw() {
     if (!contract) return;
     try {
-      let tx = await contract.feeWithdraw(parseEther(feeAmount.toString()));
+      let tx = await contract.feeWithdraw();
       await tx.wait();
       checkDetails();
       alert("Fee withdrawn");
@@ -231,13 +235,6 @@ function App() {
 
             {getAddress(userAddress) === getAddress("0xb4df6ac663383fb70bf1171d10f458c41933f85b") && (
               <>
-                <input
-                  type="number"
-                  placeholder="Fee Amount"
-                  className="input-small"
-                  onChange={(e) => setFeeAmount(e.target.value)}
-                />
-
                 <button onClick={feeWithdraw} className="withdraw-fee-btn">
                   Withdraw Fee
                 </button>
