@@ -1,6 +1,12 @@
-import { useEffect, useState } from 'react';
-import { BrowserProvider, Contract, formatEther, getAddress, parseEther } from 'ethers';
-import './App.css';
+import { useEffect, useState } from "react";
+import {
+  BrowserProvider,
+  Contract,
+  formatEther,
+  getAddress,
+  parseEther,
+} from "ethers";
+import "./App.css";
 
 const ca = "0x55E229e28b745c4a4a1408b6c5a2f73E64d149F1";
 let abi = [
@@ -15,7 +21,7 @@ let abi = [
   "function claimRefund() external",
   "function cancelBid(uint index) public",
   "function feeWithdraw() public",
-  "function claimSellAmount(uint index) public"
+  "function claimSellAmount(uint index) public",
 ];
 
 function App() {
@@ -35,12 +41,8 @@ function App() {
   useEffect(() => {
     if (!window.ethereum || !contract) return;
 
-    (async () => {
-      try {
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+    checkDetails();
+
     const handleAccountsChanged = (accounts) => {
       setUserAddress(accounts[0] || "");
     };
@@ -50,8 +52,7 @@ function App() {
     return () => {
       window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
     };
-  }, [contract, userAddress]);
-
+  }, [contract]);
 
   async function connectWallet() {
     if (!window.ethereum) return alert("Wallet Not Found");
@@ -69,7 +70,9 @@ function App() {
     if (!contract) return alert("Connect Wallet First");
 
     try {
-      let tx = await contract.registerAsSeller({ value: parseEther("0.0002").toString() });
+      let tx = await contract.registerAsSeller({
+        value: parseEther("0.0002").toString(),
+      });
       await tx.wait();
       checkDetails();
       alert("Registration Success");
@@ -98,14 +101,14 @@ function App() {
     try {
       if (!itemName || listingAmount <= 0 || endTime <= 0)
         return alert("Check values again");
-
-      let fee = listingAmount / 100;
+      const feeToPay = parseEther(listingAmount.toString());
+      let fee = feeToPay / 100n;
 
       let tx = await contract.listItem(
         itemName,
         parseEther(listingAmount.toString()),
         endTime,
-        { value: parseEther(fee.toString()).toString() }
+        { value: fee},
       );
       await tx.wait();
       alert("Item listed!");
@@ -121,16 +124,19 @@ function App() {
     try {
       let data = await contract.seeItems(searchAddress);
       data = Array.isArray(data) ? data : [];
-
-      let formatted = data.map(item => ({
+      console.log(`Raw Data : ${data}`);
+      const now = Math.floor(Date.now()/1000);
+      console.log(`Time : ${now}`)
+      let formatted = data.map((item) => ({
         sellerAddress: item[0],
         buyerAddress: item[1],
         listingAmount: Number(formatEther(item[2])),
         highestBid: Number(formatEther(item[3])),
-        startingTime: new Date(Number(item[4]) * 1000).toLocaleDateString(),
-        endingTime: new Date(Number(item[5]) * 1000).toLocaleDateString(),
+        startingTime: new Date(Number(item[4]) * 1000).toLocaleString(),
+        endingTime: new Date(Number(item[5]) * 1000).toLocaleString(),
         name: item[6],
-        isActive: item[7]
+        isActive: now<item[5],
+        isEnded: now>item[5]
       }));
       setFormattedData(formatted);
     } catch (err) {
@@ -143,7 +149,7 @@ function App() {
 
     try {
       let tx = await contract.makeBidding(index, seller, {
-        value: parseEther(biddingPrice.toString()).toString()
+        value: parseEther(biddingPrice.toString()).toString(),
       });
 
       await tx.wait();
@@ -205,19 +211,21 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        {!contract && <p>Bidding Dapp</p>}
 
-        {!contract && (
-          <p>Bidding Dapp</p>
-        )}
-
-        <div className="top-left" style={{ display: contract ? "block" : "none" }}>
+        <div
+          className="top-left"
+          style={{ display: contract ? "block" : "none" }}
+        >
           <p>Address : {userAddress}</p>
           <p>Seller : {isUserSeller ? "✅" : "❌"}</p>
           <p>Fee Collected : {feeCollected} ETH</p>
           <p>Total Items : {totalItemsListed}</p>
           <div className="refund-row">
             <p>Refund Balance : {userRefund} ETH</p>
-            <button onClick={claimRefund} className="claim-refund-btn">Claim</button>
+            <button onClick={claimRefund} className="claim-refund-btn">
+              Claim
+            </button>
           </div>
         </div>
 
@@ -233,7 +241,8 @@ function App() {
               Register As Seller
             </button>
 
-            {getAddress(userAddress) === getAddress("0xb4df6ac663383fb70bf1171d10f458c41933f85b") && (
+            {getAddress(userAddress) ===
+              getAddress("0xb4df6ac663383fb70bf1171d10f458c41933f85b") && (
               <>
                 <button onClick={feeWithdraw} className="withdraw-fee-btn">
                   Withdraw Fee
@@ -243,7 +252,10 @@ function App() {
           </div>
         )}
 
-        <div className="see-items" style={{ display: contract ? "block" : "none" }}>
+        <div
+          className="see-items"
+          style={{ display: contract ? "block" : "none" }}
+        >
           <input
             type="text"
             placeholder="User Address"
@@ -266,7 +278,7 @@ function App() {
                 <p>Start : {item.startingTime}</p>
                 <p>End : {item.endingTime}</p>
                 <p>Active : {item.isActive ? "✅" : "❌"}</p>
-                {item.isActive?
+                {item.isActive ? (
                   <div style={{}}>
                     <input
                       type="number"
@@ -274,42 +286,72 @@ function App() {
                       className="input-medium"
                       onChange={(e) => setBiddingPrice(e.target.value)}
                     />
-                  <button
-                    onClick={() => makeBidding(index, item.sellerAddress)}
-                    className="bid-btn"
-                  >
-                    Make Bid
-                  </button>
-                  {getAddress(item.sellerAddress) === getAddress(userAddress) && (
                     <button
-                      onClick={() => cancelBid(index)}
-                      className="cancel-bid-btn"
+                      onClick={() => makeBidding(index, item.sellerAddress)}
+                      className="bid-btn"
                     >
-                      Cancel Bid
+                      Make Bid
                     </button>
-                  )}
-                </div>:
-                <div>
-                  {getAddress(item.sellerAddress) === getAddress(userAddress) && (
-                    <button
-                      onClick={()=>claimSellAmount(index)}
-                      className="cancel-bid-btn"
-                    >
-                      Claim Sell Amount
-                    </button>
-                  )}
-                  <p style={{color:'rgba(189, 245, 92, 1)'}}>Event Ended Or Cancelled - No More Bidding</p>
-                </div>}
-            </div>
+                    {getAddress(item.sellerAddress) ===
+                      getAddress(userAddress) && (
+                      <button
+                        onClick={() => cancelBid(index)}
+                        className="cancel-bid-btn"
+                      >
+                        Cancel Bid
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    {getAddress(item.sellerAddress) ===
+                      getAddress(userAddress) && (
+                      <button
+                        onClick={() => claimSellAmount(index)}
+                        className="cancel-bid-btn"
+                      >
+                        Claim Sell Amount
+                      </button>
+                    )}
+                    <p style={{ color: "rgba(189, 245, 92, 1)" }}>
+                      Event Ended Or Cancelled - No More Bidding
+                    </p>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
-        <div className="list-item" style={{ display: contract ? "block" : "none" }}>
+        <div
+          className="list-item"
+          style={{ display: contract ? "block" : "none" }}
+        >
           {isUserSeller ? (
             <>
-              <input type="text" placeholder="Item Name" className="form-input" onChange={(e) => setItemName(e.target.value)} /><br/><br/>
-              <input type="number" placeholder="Listing Price" className="form-input" onChange={(e) => setListingAmount(e.target.value)} /><br/><br/>
-              <input type="number" placeholder="Deadline" className="form-input" onChange={(e) => setEndTime(e.target.value)} /><br/><br/>
+              <input
+                type="text"
+                placeholder="Item Name"
+                className="form-input"
+                onChange={(e) => setItemName(e.target.value)}
+              />
+              <br />
+              <br />
+              <input
+                type="number"
+                placeholder="Listing Price"
+                className="form-input"
+                onChange={(e) => setListingAmount(e.target.value)}
+              />
+              <br />
+              <br />
+              <input
+                type="number"
+                placeholder="Deadline"
+                className="form-input"
+                onChange={(e) => setEndTime(e.target.value)}
+              />
+              <br />
+              <br />
               <button onClick={listItem} className="list-item-btn">
                 List Item
               </button>
@@ -318,7 +360,6 @@ function App() {
             "Please Register First To List Items"
           )}
         </div>
-
       </header>
     </div>
   );
