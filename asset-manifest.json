@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/new-Bidding-Dapp/static/css/main.727ee400.css",
-    "main.js": "/new-Bidding-Dapp/static/js/main.7f743b03.js",
+    "main.css": "/new-Bidding-Dapp/static/css/main.59e4c0f7.css",
+    "main.js": "/new-Bidding-Dapp/static/js/main.3a52cd7b.js",
     "static/js/453.d7446e4a.chunk.js": "/new-Bidding-Dapp/static/js/453.d7446e4a.chunk.js",
     "index.html": "/new-Bidding-Dapp/index.html",
-    "main.727ee400.css.map": "/new-Bidding-Dapp/static/css/main.727ee400.css.map",
-    "main.7f743b03.js.map": "/new-Bidding-Dapp/static/js/main.7f743b03.js.map",
+    "main.59e4c0f7.css.map": "/new-Bidding-Dapp/static/css/main.59e4c0f7.css.map",
+    "main.3a52cd7b.js.map": "/new-Bidding-Dapp/static/js/main.3a52cd7b.js.map",
     "453.d7446e4a.chunk.js.map": "/new-Bidding-Dapp/static/js/453.d7446e4a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.727ee400.css",
-    "static/js/main.7f743b03.js"
+    "static/css/main.59e4c0f7.css",
+    "static/js/main.3a52cd7b.js"
   ]
 }
