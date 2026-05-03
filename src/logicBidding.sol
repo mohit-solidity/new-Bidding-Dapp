@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
 contract Bidding is ReentrancyGuard,Ownable,Pausable{
@@ -127,11 +127,10 @@ contract Bidding is ReentrancyGuard,Ownable,Pausable{
         require(!hideDetails[_user],"User Restrict His Details From Viewing Publically");
         return sellerDetails[_user];
     }
-    function feeWithdraw(uint _amount) public onlyOwner whenNotPaused{
+    function feeWithdraw() public onlyOwner whenNotPaused{
         require(feeCollected>0,"No Fee Collected");
-        require(_amount<=feeCollected,"Not Enough Fee Generated");
-        feeCollected -=_amount;
-        (bool success,) = payable(msg.sender).call{value:_amount}("");
+        feeCollected = 0;
+        (bool success,) = payable(msg.sender).call{value:address(this).balance}("");
         require(success,"Transaction Failed");
     }
     receive() external payable {

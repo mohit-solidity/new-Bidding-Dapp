@@ -7,22 +7,9 @@ import {
   parseEther,
 } from "ethers";
 import "./App.css";
+import { ContractABI } from "./ABI.js";
 
 const ca = "0x55E229e28b745c4a4a1408b6c5a2f73E64d149F1";
-let abi = [
-  "function registerAsSeller() public payable",
-  "function isSeller(address) public view returns(bool)",
-  "function listItem(string memory _name,uint128 _listingAmount,uint _endTime) public payable",
-  "function feeCollected() public view returns(uint256)",
-  "function totalItemsListed() public view returns(uint256)",
-  "function seeItems(address) public view returns((address,address,uint128,uint128,uint64,uint64,string,bool)[])",
-  "function makeBidding(uint index,address _seller) public payable",
-  "function buyerRefund(address) public view returns(uint)",
-  "function claimRefund() external",
-  "function cancelBid(uint index) public",
-  "function feeWithdraw() public",
-  "function claimSellAmount(uint index) public",
-];
 
 function App() {
   const [userAddress, setUserAddress] = useState(null);
@@ -37,23 +24,34 @@ function App() {
   const [formattedData, setFormattedData] = useState([]);
   const [biddingPrice, setBiddingPrice] = useState(0);
   const [userRefund, setUserRefund] = useState(0);
+  const [pastData, setPastData] = useState([]);
 
   useEffect(() => {
     if (!window.ethereum || !contract) return;
 
     checkDetails();
+    console.log(`Running : ${ContractABI}`);
 
     const handleAccountsChanged = (accounts) => {
       setUserAddress(accounts[0] || "");
     };
 
     window.ethereum.on("accountsChanged", handleAccountsChanged);
-
     return () => {
       window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
     };
   }, [contract]);
+  async function load() {
+    try {
+      console.log(`ABI : ${ContractABI}`)
+      const data = await contract.queryFilter(contract.filters.ItemListed());
+      setPastData(data);
+      console.log(`Data : ${data}`);
 
+    } catch (err) {
+      console.log(`Error : ${err.message}`);
+    }
+  }
   async function connectWallet() {
     if (!window.ethereum) return alert("Wallet Not Found");
 
@@ -62,7 +60,7 @@ function App() {
     setUserAddress(account[0]);
 
     const signer = await provider.getSigner();
-    let cont = new Contract(ca, abi, signer);
+    let cont = new Contract(ca, ContractABI, signer);
     setContract(cont);
   }
 
@@ -87,12 +85,10 @@ function App() {
     let tx = await contract.isSeller(userAddress);
     let fee = await contract.feeCollected();
     let items = await contract.totalItemsListed();
-    let refund = await contract.buyerRefund(userAddress);
 
     setIsSeller(tx);
     setFeeCollected(formatEther(fee));
     setTotalItemsListed(items);
-    setUserRefund(formatEther(refund));
   }
 
   async function listItem() {
@@ -108,7 +104,7 @@ function App() {
         itemName,
         parseEther(listingAmount.toString()),
         endTime,
-        { value: fee},
+        { value: fee },
       );
       await tx.wait();
       alert("Item listed!");
@@ -125,8 +121,8 @@ function App() {
       let data = await contract.seeItems(searchAddress);
       data = Array.isArray(data) ? data : [];
       console.log(`Raw Data : ${data}`);
-      const now = Math.floor(Date.now()/1000);
-      console.log(`Time : ${now}`)
+      const now = Math.floor(Date.now() / 1000);
+      console.log(`Time : ${now}`);
       let formatted = data.map((item) => ({
         sellerAddress: item[0],
         buyerAddress: item[1],
@@ -135,8 +131,8 @@ function App() {
         startingTime: new Date(Number(item[4]) * 1000).toLocaleString(),
         endingTime: new Date(Number(item[5]) * 1000).toLocaleString(),
         name: item[6],
-        isActive: now<item[5],
-        isEnded: now>item[5]
+        isActive: now < item[5],
+        isEnded: now > item[5],
       }));
       setFormattedData(formatted);
     } catch (err) {
@@ -237,6 +233,7 @@ function App() {
 
         {contract && (
           <div className="admin-controls">
+            <button onClick={load}>Load Events</button>
             <button onClick={registerAsSeller} className="register-seller-btn">
               Register As Seller
             </button>
